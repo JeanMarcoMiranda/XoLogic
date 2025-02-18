@@ -39,6 +39,14 @@ fun Board() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // 📌 Mostrar quién juega
+        Text(
+            text = "Turno: ${gameState.currentPlayer}",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // 📌 Dibujar la grilla de 3x3
         for (row in 0 until 3) {
             Row {
                 for (col in 0 until 3) {

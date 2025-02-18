@@ -23,8 +23,9 @@ fun BoardCell(
             .border(2.dp, Color.Black)
             .clickable(
                 enabled = symbol == null,
-                onClick = onClick
-            ),
+            ) {
+                onClick()
+            },
         contentAlignment = Alignment.Center
     ) {
         symbol?.let {
