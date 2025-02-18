@@ -26,11 +26,14 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.jacket.xologic.domain.usecases.checkWinner
+import com.jacket.xologic.domain.usecases.isDraw
 import com.jacket.xologic.ui.game.GameState
 
 @Composable
 fun Board() {
     var gameState by remember { mutableStateOf(GameState()) }
+    var winner by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -39,14 +42,17 @@ fun Board() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 📌 Mostrar quién juega
-        Text(
-            text = "Turno: ${gameState.currentPlayer}",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        // Show whos player is the turn if there is not a winner yet
+        if (winner == null) {
+            Text(
+                text = "Turno: ${gameState.currentPlayer}",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
 
-        // 📌 Dibujar la grilla de 3x3
+
+        // Display a 3x3 grid
         for (row in 0 until 3) {
             Row {
                 for (col in 0 until 3) {
@@ -55,13 +61,22 @@ fun Board() {
                     BoardCell(
                         symbol = gameState.board[index],
                         onClick = {
-                            if (gameState.board[index] == null) {
+                            if (gameState.board[index] == null) { // Should not allow to play if there is a winner
                                 gameState = gameState.copy(
                                     board = gameState.board.toMutableList().apply {
                                         set(index, gameState.currentPlayer)
                                     },
                                     currentPlayer = if (gameState.currentPlayer == "X") "O" else "X"
                                 )
+
+                                // Check if there is a winner
+                                checkWinner(gameState.board)?.let {
+                                    winner = it
+                                } ?: run {
+                                    if (isDraw(gameState.board)) {
+                                        winner = "Empate"
+                                    }
+                                }
                             }
                         }
                     )
