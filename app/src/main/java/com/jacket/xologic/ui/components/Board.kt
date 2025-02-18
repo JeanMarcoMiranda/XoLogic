@@ -88,7 +88,11 @@ fun Board() {
         if (showDialog) {
             ResultDialog(
                 winner = winner,
-                onDismiss = {}
+                onDismiss = {
+                    gameState = GameState()
+                    winner = null
+                    showDialog = false
+                }
             )
         }
     }
