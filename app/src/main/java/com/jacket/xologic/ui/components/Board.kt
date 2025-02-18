@@ -34,6 +34,7 @@ import com.jacket.xologic.ui.game.GameState
 fun Board() {
     var gameState by remember { mutableStateOf(GameState()) }
     var winner by remember { mutableStateOf<String?>(null) }
+    var showDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -58,30 +59,37 @@ fun Board() {
                 for (col in 0 until 3) {
                     val index = row * 3 + col
 
-                    BoardCell(
-                        symbol = gameState.board[index],
-                        onClick = {
-                            if (gameState.board[index] == null) { // Should not allow to play if there is a winner
-                                gameState = gameState.copy(
-                                    board = gameState.board.toMutableList().apply {
-                                        set(index, gameState.currentPlayer)
-                                    },
-                                    currentPlayer = if (gameState.currentPlayer == "X") "O" else "X"
-                                )
+                    BoardCell(symbol = gameState.board[index], onClick = {
+                        if (gameState.board[index] == null && winner == null) { // Should not allow to play if there is a winner
+                            gameState = gameState.copy(
+                                board = gameState.board.toMutableList().apply {
+                                    set(index, gameState.currentPlayer)
+                                },
+                                currentPlayer = if (gameState.currentPlayer == "X") "O" else "X"
+                            )
 
-                                // Check if there is a winner
-                                checkWinner(gameState.board)?.let {
-                                    winner = it
-                                } ?: run {
-                                    if (isDraw(gameState.board)) {
-                                        winner = "Empate"
-                                    }
+                            // Check if there is a winner
+                            checkWinner(gameState.board)?.let {
+                                winner = it
+                                showDialog = true
+                            } ?: run {
+                                if (isDraw(gameState.board)) {
+                                    winner = "Empate"
+                                    showDialog = true
                                 }
                             }
                         }
-                    )
+                    })
                 }
             }
+        }
+
+        // Show dialog with the result of the game if there is a winner or it is draw
+        if (showDialog) {
+            ResultDialog(
+                winner = winner,
+                onDismiss = {}
+            )
         }
     }
 }
