@@ -45,10 +45,8 @@ fun Board() {
     ) {
         // Show whos player is the turn if there is not a winner yet
         if (winner == null) {
-            Text(
-                text = "Turno: ${gameState.currentPlayer}",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
+            TurnIndicator(
+                currentPlayer = gameState.currentPlayer
             )
         }
 
@@ -58,8 +56,9 @@ fun Board() {
             Row {
                 for (col in 0 until 3) {
                     val index = row * 3 + col
+                    val cellSymbol = gameState.board[index]
 
-                    BoardCell(symbol = gameState.board[index], onClick = {
+                    BoardCell(symbol = cellSymbol.orEmpty(), onClick = {
                         if (gameState.board[index] == null && winner == null) { // Should not allow to play if there is a winner
                             gameState = gameState.copy(
                                 board = gameState.board.toMutableList().apply {
